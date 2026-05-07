@@ -1,0 +1,61 @@
+.loader {
+    width: 100px;
+    aspect-ratio: 2;
+    --_g: no-repeat radial-gradient(circle closest-side,#000 90%,#0000);
+    background: 
+      var(--_g) 0%   50%,
+      var(--_g) 50%  50%,
+      var(--_g) 100% 50%;
+    background-size: calc(100%/3) 50%;
+    animation: l3 1s infinite linear;
+  }
+  @keyframes l3 {
+      20%{background-position:0%   0%, 50%  50%,100%  50%}
+      40%{background-position:0% 100%, 50%   0%,100%  50%}
+      60%{background-position:0%  50%, 50% 100%,100%   0%}
+      80%{background-position:0%  50%, 50%  50%,100% 100%}
+  }
+
+  
+  /* ------------------------------------------------------------------------------------- */
+  .loader2 {
+    font-weight: bold;
+    font-family: sans-serif;
+    font-size: 30px;
+    animation: l1 1s linear infinite alternate;
+  }
+  .loader2:before {
+    content:"Loading..."
+  }
+  @keyframes l1 {to{opacity: 0}}
+
+
+/* ------------------------------------------------------------------------------------- */
+  @keyframes custom-spin {
+    0% { transform: rotateY(0deg); }
+    100% { transform: rotateY(360deg); }
+  }
+  
+  .animate-custom-spin {
+    animation: custom-spin 3s linear infinite;
+  }
+
+/* ------------------------------------------------------------------------------------- */
+
+  /* HTML: <div class="loader"></div> */
+.loader3 {
+    width: fit-content;
+    font-weight: bold;
+    font-family: sans-serif;
+    font-size: 30px;
+    padding-bottom: 8px;
+    background: linear-gradient(currentColor 0 0) 0 100%/0% 3px no-repeat;
+    animation: l2 2s linear infinite;
+  }
+  .loader3:before {
+    content:"กำลังโหลด..."
+  }
+  @keyframes l2 {to{background-size: 100% 3px}}
+
+
+  
