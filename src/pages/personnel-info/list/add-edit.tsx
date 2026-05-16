@@ -209,6 +209,9 @@ const PageAddEditPersonnel = (): JSX.Element => {
       setAlertContext({ type: "success", message: "บันทึกสําเร็จ" });
       navigate("/personnel-admin-list");
     },
+    onError: (error: any) => {
+      setAlertContext({ type: "warning", message: error.message });
+    },
     onSettled: () => {
       setLoadingContext(false);
     },
@@ -219,20 +222,29 @@ const PageAddEditPersonnel = (): JSX.Element => {
     const phoneRegex = /^0\d{8,9}$/;
 
     // ข้อมูลส่วนตัว
+    // if (!payload.username) return "กรุณากรอกชื่อผู้ใช้งาน";
+    // if (!payload.title) return "กรุณากรอกคำนำหน้าชื่อ";
+    // if (!payload.firstname) return "กรุณากรอกชื่อ";
+    // if (!payload.surname) return "กรุณากรอกนามสกุล";
+    // if (!payload.birthday) return "กรุณากรอกวันเกิด";
+    // if (!payload.idCardNumber) return "กรุณากรอกเลขบัตรประชาชน";
+    // if (!idCardRegex.test(payload.idCardNumber))
+    //   return "กรุณากรอกเลขบัตรประชาชนให้ครบ 13 หลัก และต้องเป็นตัวเลขเท่านั้น";
+    // if (!payload.phone) return "กรุณากรอกเบอร์ติดต่อ";
+    // if (!phoneRegex.test(payload.phone))
+    //   return "กรุณากรอกเบอร์ติดต่อให้ถูกต้อง (เช่น 0812345678)";
+    // if (!payload.statusUser) return "กรุณาเลือกสถานะ";
+    // if (!payload.statusWork) return "กรุณาเลือกตำแหน่งการทำงาน";
+    // if (!payload.position) return "กรุณาเลือกตำแหน่งงานปัจจุบัน";
     if (!payload.username) return "กรุณากรอกชื่อผู้ใช้งาน";
     if (!payload.title) return "กรุณากรอกคำนำหน้าชื่อ";
     if (!payload.firstname) return "กรุณากรอกชื่อ";
     if (!payload.surname) return "กรุณากรอกนามสกุล";
-    if (!payload.birthday) return "กรุณากรอกวันเกิด";
-    if (!payload.idCardNumber) return "กรุณากรอกเลขบัตรประชาชน";
-    if (!idCardRegex.test(payload.idCardNumber))
+    if (!payload.sex) return "กรุณากรอกนามสกุล";
+    if (payload.idCardNumber && !idCardRegex.test(payload.idCardNumber))
       return "กรุณากรอกเลขบัตรประชาชนให้ครบ 13 หลัก และต้องเป็นตัวเลขเท่านั้น";
-    if (!payload.phone) return "กรุณากรอกเบอร์ติดต่อ";
-    if (!phoneRegex.test(payload.phone))
+    if (payload.phone && !phoneRegex.test(payload.phone))
       return "กรุณากรอกเบอร์ติดต่อให้ถูกต้อง (เช่น 0812345678)";
-    if (!payload.statusUser) return "กรุณาเลือกสถานะ";
-    if (!payload.statusWork) return "กรุณาเลือกตำแหน่งการทำงาน";
-    if (!payload.position) return "กรุณาเลือกตำแหน่งงานปัจจุบัน";
 
     // ข้อมูลคู่สมรส
     if (payload.statusUser === "สมรส") {

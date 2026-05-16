@@ -21,7 +21,7 @@ import {
   Pagination,
   Select,
 } from "@mui/material";
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
@@ -32,7 +32,9 @@ const PageCheckInCheckOutList = (): JSX.Element => {
   const { setAlertContext } = useAlert();
   const [search, setSearch] = useState({
     userId: "",
-    month: "",
+    searchType: "monthly",
+    date: dayjs().format("YYYY-MM-DD"),
+    month: dayjs().format("YYYY-MM"),
   });
   const [pagination, setPagination] = useState<PaginationModel>({
     page: 1,
@@ -103,7 +105,14 @@ const PageCheckInCheckOutList = (): JSX.Element => {
           value: search.userId,
         });
       }
-      if (search.month) {
+      if (search.searchType === "daily" && search.date) {
+        const dateStr = dayjs(search.date).format("YYYY-MM-DD");
+        filter.push({
+          field: "attendanceDate",
+          operator: "between",
+          value: [dateStr, dateStr],
+        });
+      } else if (search.searchType === "monthly" && search.month) {
         const start = dayjs(search.month).startOf("month").format("YYYY-MM-DD");
         const end = dayjs(search.month).endOf("month").format("YYYY-MM-DD");
         filter.push({
@@ -207,7 +216,14 @@ const PageCheckInCheckOutList = (): JSX.Element => {
   };
 
   const onClickExport = async () => {
-    if (!search.month) {
+    if (search.searchType === "daily" && !search.date) {
+      setAlertContext({
+        type: "warning",
+        message: "กรุณาเลือกวันที่",
+      });
+      return;
+    }
+    if (search.searchType === "monthly" && !search.month) {
       setAlertContext({
         type: "warning",
         message: "กรุณาเลือกเดือน",
@@ -223,7 +239,14 @@ const PageCheckInCheckOutList = (): JSX.Element => {
         value: search.userId,
       });
     }
-    if (search.month) {
+    if (search.searchType === "daily" && search.date) {
+      const dateStr = dayjs(search.date).format("YYYY-MM-DD");
+      filter.push({
+        field: "attendanceDate",
+        operator: "between",
+        value: [dateStr, dateStr],
+      });
+    } else if (search.searchType === "monthly" && search.month) {
       const start = dayjs(search.month).startOf("month").format("YYYY-MM-DD");
       const end = dayjs(search.month).endOf("month").format("YYYY-MM-DD");
       filter.push({
@@ -264,7 +287,9 @@ const PageCheckInCheckOutList = (): JSX.Element => {
   const onClearSearch = () => {
     setSearch({
       userId: "",
-      month: "",
+      searchType: "monthly",
+      date: dayjs().format("YYYY-MM-DD"),
+      month: dayjs().format("YYYY-MM"),
     });
     setPagination({
       ...pagination,
@@ -326,29 +351,57 @@ const PageCheckInCheckOutList = (): JSX.Element => {
                     </Select>
                   </div>
                   <div className="lg:basis-1/5 basis-full px-3 mb-3">
-                    <p>เดือน</p>
-                    <DateTimePicker
-                      // disablePast
-                      name="month"
-                      // onChange={(newValue) => onChangeDate("birthday", newValue)}
-                      className="w-full"
-                      //   value={dayjs()}
-                      views={["year", "month"]}
-                      onChange={(newValue) => {
+                    <p>ประเภทการค้นหา</p>
+                    <Select
+                      fullWidth
+                      size="small"
+                      value={search.searchType}
+                      onChange={(e) => {
                         setSearch({
                           ...search,
-                          month: newValue?.format("YYYY-MM") as string,
+                          searchType: e.target.value as string,
                         });
                       }}
-                      // disabled={isDisabled}
+                    >
+                      <MenuItem value="daily">รายวัน</MenuItem>
+                      <MenuItem value="monthly">รายเดือน</MenuItem>
+                    </Select>
+                  </div>
+                  <div className="lg:basis-1/5 basis-full px-3 mb-3">
+                    <p>{search.searchType === "daily" ? "วันที่" : "เดือน"}</p>
+                    <DatePicker
+                      className="w-full"
+                      value={
+                        search.searchType === "daily"
+                          ? dayjs(search.date)
+                          : dayjs(search.month)
+                      }
+                      views={
+                        search.searchType === "daily"
+                          ? ["year", "month", "day"]
+                          : ["year", "month"]
+                      }
+                      format={
+                        search.searchType === "daily" ? "DD/MM/YYYY" : "MM/YYYY"
+                      }
+                      onChange={(newValue) => {
+                        if (search.searchType === "daily") {
+                          setSearch({
+                            ...search,
+                            date: newValue?.format("YYYY-MM-DD") as string,
+                          });
+                        } else {
+                          setSearch({
+                            ...search,
+                            month: newValue?.format("YYYY-MM") as string,
+                          });
+                        }
+                      }}
                       slotProps={{
                         textField: {
                           error: false,
                           size: "small",
                         },
-                        //   actionBar: {
-                        //     actions: ["clear", "cancel", "accept"],
-                        //   },
                       }}
                     />
                   </div>

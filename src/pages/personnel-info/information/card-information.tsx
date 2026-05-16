@@ -31,14 +31,20 @@ const CardInformation = ({
   const params = useParams();
   const isDisabledUsername = params?.action === "create" ? false : true;
   const ddl = {
-    statusWork: ["ข้าราชการครู", "พนักงานราชการ", "อัตราจ้าง", "นักการภารโรง"],
+    statusWork: [
+      "ข้าราชการครู",
+      "พนักงานประจำ",
+      "อัตราจ้าง",
+      "ลูกจ้างชั่วคราว",
+    ],
     position: [
-      "พนักงาน",
-      "ครู",
-      "หัวหน้ากลุ่มสาระ",
-      "หัวหน้าฝ่ายงาน",
-      "รองผู้อำนวยการ",
       "ผู้อำนวยการ",
+      "รองผู้อำนวยการ",
+      "หัวหน้าฝ่ายงาน",
+      "หัวหน้ากลุ่มสาระ",
+      "นักวิชาการ",
+      "ลูกจ้างชั่วคราว",
+      "ครู",
     ],
     deputy: [
       "กลุ่มงานบริหารวิชาการ",
@@ -53,10 +59,10 @@ const CardInformation = ({
       | SelectChangeEvent,
   ) => {
     const { name, value } = event.target;
-    if (name === "statusWork" && value === "นักการภารโรง") {
+    if (name === "statusWork" && value === "ลูกจ้างชั่วคราว") {
       const newForm = {
         ...form,
-        position: "พนักงาน",
+        position: "ลูกจ้างชั่วคราว",
         [name]: value,
       };
       setIsDisablePosition(true);
@@ -348,7 +354,7 @@ const CardInformation = ({
             </Select>
           </div>
 
-          {(form.position === "ครู" || form.position === "พนักงาน") && (
+          {(form.position === "ครู" || form.position === "ลูกจ้างชั่วคราว") && (
             <>
               <div className="lg:basis-1/5 basis-full px-3 mb-3">
                 <p className="mb-1">วิชาที่สอน</p>

@@ -101,7 +101,7 @@ const DialogManage = ({
           </div>
 
           <div className="mb-3">
-            <p>วันครบกำหนด</p>
+            <p>วันครบกำหนดส่งผลงานเลื่อนวิทยฐานะ</p>
             <DateTimePicker
               name="dueDate"
               onChange={(newValue) => onChangeDate("dueDate", newValue)}
@@ -149,4 +149,3 @@ const DialogManage = ({
 };
 
 export default DialogManage;
-
