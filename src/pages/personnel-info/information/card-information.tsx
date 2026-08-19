@@ -31,20 +31,16 @@ const CardInformation = ({
   const params = useParams();
   const isDisabledUsername = params?.action === "create" ? false : true;
   const ddl = {
-    statusWork: [
-      "ข้าราชการครู",
-      "พนักงานประจำ",
-      "อัตราจ้าง",
-      "ลูกจ้างชั่วคราว",
-    ],
+    statusWork: ["ข้าราชการ", "พนักงานประจำ", "อัตราจ้าง", "ลูกจ้างชั่วคราว"],
     position: [
       "ผู้อำนวยการ",
       "รองผู้อำนวยการ",
       "หัวหน้าฝ่ายงาน",
       "หัวหน้ากลุ่มสาระ",
+      "ครู",
+      "ครูผู้ช่วย",
       "นักวิชาการ",
       "ลูกจ้างชั่วคราว",
-      "ครู",
     ],
     deputy: [
       "กลุ่มงานบริหารวิชาการ",
@@ -52,6 +48,7 @@ const CardInformation = ({
       "กลุ่มงานบริหารงานทั่วไป",
       "กลุ่มงานบริหารงบประมาณ",
     ],
+    academicStanding: ["ไม่มี", "คศ.1", "คศ.2", "คศ.3", "คศ.4"],
   };
   const onChangeFormCard = (
     event:
@@ -75,6 +72,19 @@ const CardInformation = ({
       setIsDisablePosition(false);
       returnForm(newForm);
     }
+  };
+
+  const calcYearService = (startDate?: string): string => {
+    if (!startDate) return "";
+    const start = dayjs(startDate);
+    if (!start.isValid()) return "";
+    const now = dayjs();
+    const years = now.diff(start, "year");
+    const months = now.diff(start.add(years, "year"), "month");
+    if (years === 0 && months === 0) return "น้อยกว่า 1 เดือน";
+    if (years === 0) return `${months} เดือน`;
+    if (months === 0) return `${years} ปี`;
+    return `${years} ปี ${months} เดือน`;
   };
 
   //   const onChangeDate = (key: string, value: any) => {
@@ -354,10 +364,12 @@ const CardInformation = ({
             </Select>
           </div>
 
-          {(form.position === "ครู" || form.position === "ลูกจ้างชั่วคราว") && (
+          {(form.position === "ครู" ||
+            form.position === "ลูกจ้างชั่วคราว" ||
+            form.position === "ครูผู้ช่วย") && (
             <>
               <div className="lg:basis-1/5 basis-full px-3 mb-3">
-                <p className="mb-1">วิชาที่สอน</p>
+                <p className="mb-1">กลุ่มสาระที่สอน</p>
                 <TextField
                   name="subjects"
                   value={form.subjects}
@@ -436,11 +448,69 @@ const CardInformation = ({
               </Select>
             </div>
           )}
+
+          {form.statusWork === "ข้าราชการ" && (
+            <div className="lg:basis-1/5 basis-full px-3 mb-3">
+              <p className="mb-1">วิทยฐานะ</p>
+              <Select
+                fullWidth
+                disabled={isDisabled}
+                value={form.academicStanding ?? ""}
+                name="academicStanding"
+                onChange={onChangeFormCard}
+              >
+                {ddl.academicStanding.map((item, index) => (
+                  <MenuItem key={"academicStanding" + index} value={item}>
+                    {item}
+                  </MenuItem>
+                ))}
+              </Select>
+            </div>
+          )}
         </div>
 
         <div className="basis-full flex flex-wrap">
           <div className="lg:basis-1/5 basis-full px-3 mb-3">
-            <p className="mb-1">เลขที่ใบประกอบวิชาชีพ</p>
+            <p className="mb-1">วันเริ่มราชการ</p>
+            <DateTimePicker
+              // disablePast
+              name="yearServiceStartDate"
+              onChange={(newValue) =>
+                onChangeDate("yearServiceStartDate", newValue)
+              }
+              className="w-full"
+              value={dayjs(form.yearServiceStartDate)}
+              views={["year", "month", "day"]}
+              disabled={isDisabled}
+              slotProps={{
+                textField: {
+                  error: false,
+                  size: "small",
+                },
+                //   actionBar: {
+                //     actions: ["clear", "cancel", "accept"],
+                //   },
+              }}
+            />
+          </div>
+
+          <div className="lg:basis-1/5 basis-full px-3 mb-3">
+            <p className="mb-1">อายุราชการ</p>
+            <TextField
+              name="yearService"
+              value={calcYearService(form.yearServiceStartDate)}
+              size="small"
+              fullWidth
+              autoComplete="off"
+              disabled
+            />
+          </div>
+        </div>
+
+
+        <div className="basis-full flex flex-wrap">
+          <div className="lg:basis-1/5 basis-full px-3 mb-3">
+            <p className="mb-1">เลขที่ใบประกอบวิชาชีพครู</p>
             <TextField
               name="professionalLicenseNo"
               value={form.professionalLicenseNo}
@@ -475,21 +545,85 @@ const CardInformation = ({
               }}
             />
           </div>
+        </div>
 
+        <div className="basis-full flex flex-wrap">
           <div className="lg:basis-1/5 basis-full px-3 mb-3">
-            <p className="mb-1">อายุราชการ</p>
+            <p className="mb-1">เลขที่ใบประกอบวิชาชีพผู้บริหาร</p>
             <TextField
-              name="yearService"
-              value={form.yearService}
+              name="administratorLicenseNo"
+              value={form.administratorLicenseNo ?? ""}
               onChange={onChangeFormCard}
               size="small"
               fullWidth
               autoComplete="off"
               disabled={isDisabled}
-              type="number"
+            />
+          </div>
+
+          <div className="lg:basis-1/5 basis-full px-3 mb-3">
+            <p className="mb-1">วันหมดอายุ</p>
+            <DateTimePicker
+              // disablePast
+              name="administratorLicenseEndDate"
+              onChange={(newValue) =>
+                onChangeDate("administratorLicenseEndDate", newValue)
+              }
+              className="w-full"
+              value={dayjs(form.administratorLicenseEndDate)}
+              views={["year", "month", "day"]}
+              disabled={isDisabled}
+              slotProps={{
+                textField: {
+                  error: false,
+                  size: "small",
+                },
+                //   actionBar: {
+                //     actions: ["clear", "cancel", "accept"],
+                //   },
+              }}
             />
           </div>
         </div>
+        <div className="basis-full flex flex-wrap">
+          <div className="lg:basis-1/5 basis-full px-3 mb-3">
+            <p className="mb-1">เลขที่ใบประกอบวิชาชีพศึกษานิเทศก์</p>
+            <TextField
+              name="supervisorLicenseNo"
+              value={form.supervisorLicenseNo ?? ""}
+              onChange={onChangeFormCard}
+              size="small"
+              fullWidth
+              autoComplete="off"
+              disabled={isDisabled}
+            />
+          </div>
+
+          <div className="lg:basis-1/5 basis-full px-3 mb-3">
+            <p className="mb-1">วันหมดอายุ</p>
+            <DateTimePicker
+              // disablePast
+              name="supervisorLicenseEndDate"
+              onChange={(newValue) =>
+                onChangeDate("supervisorLicenseEndDate", newValue)
+              }
+              className="w-full"
+              value={dayjs(form.supervisorLicenseEndDate)}
+              views={["year", "month", "day"]}
+              disabled={isDisabled}
+              slotProps={{
+                textField: {
+                  error: false,
+                  size: "small",
+                },
+                //   actionBar: {
+                //     actions: ["clear", "cancel", "accept"],
+                //   },
+              }}
+            />
+          </div>
+        </div>
+        
       </div>
     </>
   );

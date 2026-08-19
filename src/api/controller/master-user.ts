@@ -22,8 +22,13 @@ export interface MasterUserModel {
   position?: string;
   statusWork?: string;
   professionalLicenseNo?: string;
+  administratorLicenseNo?: string;
+  supervisorLicenseNo?: string;
   professionalLicenseEndDate?: string;
+  administratorLicenseEndDate?: string;
+  supervisorLicenseEndDate?: string;
   yearService?: string;
+  yearServiceStartDate?: string;
   subjects?: string;
   isActive?: boolean;
   isRefactorPassword?: boolean;
@@ -33,6 +38,7 @@ export interface MasterUserModel {
   deputyDirector?: string;
   sex?: string;
   role?: string;
+  academicStanding?: string;
 }
 
 export interface MateAndChildModel {
